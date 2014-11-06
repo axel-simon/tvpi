@@ -1,0 +1,5 @@
+This is the Two-Variables-Per-Inequality polyhedra library to be used
+as an abstract domain in static analysis.
+
+Please report problems to the author: A.Simon@kent.ac.uk
+

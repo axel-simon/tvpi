@@ -1,0 +1,132 @@
+-*- change-log -*-
+2006-03-11 Axel Simon <A.Simon@kent.ac.uk>
+
+	* polyhedron.cpp: Inserting inequalities can return a set of facets
+	that are deallocated. Specifically, whenever bounds have shrunk such
+	that the current inequalities are all redundant and new inequalities
+	are added that have the same angle, then the old inequalities are
+	removed during merge. In case all the new inequalities are redundant
+	and thus removed, the redundancy removal algorithm claims that no
+	old inequalities were removed (which is true). However, in that
+	case we simply returned instead of copying the resulting set back
+	into facets. Alternatively, we chould flag the fact old inequalities
+	were removed during the merge.
+
+2005-11-02 Axel Simon <A.Simon@kent.ac.uk>
+
+	* polyhedron.cpp: Entailment check had one-off errors when testing
+	the difference in quadrants.
+
+2005-10-29 Axel Simon <A.Simon@kent.ac.uk>
+
+	* polyhedron.cpp: Convex hull was again wrong when dealing with
+	colinear points.
+
+2005-09-16 Axel Simon <A.Simon@kent.ac.uk>
+
+	* polyhedron.cpp: Redundancy removal did not set the changed flag
+	when old inequalities were removed due to tighter bounds. The result
+	was that insertInequality would simply return, assuming that the
+	old facet array was still valid when, in fact, some of its inequalities
+	had been deleted by now.
+
+2005-05-01 Axel Simon <A.Simon@kent.ac.uk>
+	* interval.hh: Passed a Bound to swapWith by value, not by reference
+	which resulted in both bounds being assigned the same value.
+
+2004-09-09 Axel Simon <A.Simon@kent.ac.uk>
+	* polyhedron.cpp: Redundancy removal did not update the bounds iff
+	an inequality had no predecessor for at least and angle of pi. In
+	this case the second last bound might imply a new bound on the
+	last bound.
+	
+2004-08-17 Axel Simon <A.Simon@kent.ac.uk>
+        * planar.cpp: The indices for the resultants calculations were
+        wrong. The first set had as "to" quadrant east instead of total
+        resulting in no resultants whatsoever.
+ 
+2004-08-03 Axel Simon <A.Simon@kent.ac.uk> 
+	* interval.cpp: Corrected the inclusion check for intervals. An
+	infinite interval did not contain a finite one.
+
+2004-07-28 Axel Simon <A.Simon@kent.ac.uk> 
+	* polyhedron.cpp: The reconstitution in the convex hull algorithm
+	iterated over the wrong indices when checking whether a point in
+	the box satisfies a potential inequality.
+	
+2004-07-15 Axel Simon <A.Simon@kent.ac.uk> 
+	* polyhedron.cpp: Fixed the redundancy removal function. If two
+	inequalities are two quadrants apart but less that 2 Pi then,
+	after moving the upper bound as in the one-quadrant-apart case,
+	reduce the lower bound by intersecting the upper bound and an
+	inequality. I reduced the lower bound by the intersection point
+	which is incorrect if the lower bound was already tighter than the
+	intersection point.
+	
+2004-07-08 Axel Simon <A.Simon@kent.ac.uk>
+	* polyhedron.cpp: Testing whether a line cuts the box in the
+	convex hull algorithm was wrongly negated.
+
+	* planar.cpp: The test 'isSaturated' on inequalities actually
+	tested feasibility. Changed the less or equal to an equality.
+	
+2004-07-07 Axel Simon <A.Simon@kent.ac.uk>
+	* polyhedron.cpp: An assertion on the prev index after the removal
+	of a redundant inequality was formulated as an assignment, not as
+	a test. This only caused trouble now since the array can now
+	become empty and prev can become 0.
+
+	* polyhedron.cpp: Setting the index to the precise number of
+	iterations so that a fixpoint is reached was not correct. It had
+	to be increased by one because index is decremented at the end of
+	the loop and thus the inequality in front of the one that was
+	removed and caused index to be reset would not be checked.
+
+	* tests/testPolyhedronAddInequalitySet1.cpp: Added test for the
+	bug above.
+	
+2004-06-26 Axel Simon <A.Simon@kent.ac.uk>
+	* polyhedron.cpp: Rotating inequalities during normalization did
+	not set the hasChanged flag because it was passed by value, not by
+	reference. This prevented the copying of newly created
+	inequalities back to the facetNew array, leaving the caller with
+	pointers to free inequalities causing a funny assertion failure
+	later on when calculating resultants. Furthermore found a sequence
+	violation in readjusting the angles in normalize, similar to that
+	from the 23rd of January 2004.
+	
+2004-06-25 Axel Simon <A.Simon@kent.ac.uk>
+	* tvpi.cpp: Closure j,i <= j,k * k,i had the variables in the
+	result flipped due to a comparision that was in the wrong
+	direction.
+
+	* polyhedra.cpp: Calculating resultants was accessing the wrong
+	array when generating bounding SVPI inequalities.
+	
+2004-06-23 Axel Simon <A.Simon@kent.ac.uk>
+	* tvpi.cpp: Approximating a bounded system should not try to
+	access the index of the first unbounded variable, as that is
+	invalid. Removed this copy-and-paste bug from the loop that sums
+	up the bounds of the variables.
+	
+	* planar.cpp: The entailment check for two inequalities that
+	reduces to two test over one inequality should have been a
+	conjunction, not a disjunction. However, the function was not used
+	in this way.
+
+	* polyhedron.cpp: Merging inequalities in
+	PolyhedronImpl::insertInequalities used the entailment function in
+	case of parallel inequalities wrongly.
+	
+2004-01-23 Axel Simon <A.Simon@kent.ac.uk>
+	* polyhedron.cpp: The assignment a[n]=a[++n] in the convex hull
+	algorithm was optimized away. It was a misunderstanding of how C
+	is meant to evaluate its expression.
+
+2003-12-15 Axel Simon <A.Simon@kent.ac.uk>
+
+	* polyhedron.hh, polyhedron.cpp, tvpi.cpp: In case some of the
+	inequalities are redundant in the call to
+	DenseTvpi::addInequalitySet, calculating the directions for
+	Polyhedron::shrinkToIntegralGrid may work on deleted inequalities.
+	

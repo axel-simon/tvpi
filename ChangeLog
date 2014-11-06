@@ -1,0 +1,266 @@
+2004-09-09 Axel Simon <A.Simon@kent.ac.uk>
+	* polyhedron.cpp: Redundancy removal did not update the bounds iff
+	an inequality had no predecessor for at least and angle of pi. In
+	this case the second last bound might imply a new bound on the
+	last bound. Removed code that updated a bound when the other bound
+	was a singelton interval. This is now handled by the new code.
+
+	* planar.cpp: calculateY and calculateX has a whole number as
+	argument. Passing a rational number in as argument silently
+	rounded which makes rational polyhedra incorrect. Changed
+	arguments to rational.
+	
+2004-09-08 Axel Simon <A.Simon@kent.ac.uk>
+        * polyhedron.hh: Make swapVars a no-op if the size of the polyhedron
+        is zero.
+ 
+2004-08-25 Axel Simon <A.Simon@kent.ac.uk> 
+	* planar.cpp, planar.hh, polyhedron.cpp, polyhedron.hh, tvpi.cpp,
+	tvpi.hh, tests/*: Split the library into rational and integral by
+	adding a boolean template parameter. Made the integral convex hull
+	algorithm.
+
+2004-08-17 Axel Simon <A.Simon@kent.ac.uk> 
+	* planar.cpp, planar.hh, polyhedron.cpp, polyhedron.hh, tvpi.cpp,
+	tvpi.hh: Inserting inequalities now tightens them around the
+	integral hull. Calculating resultants now uses a vector since
+	inserting inequalities may return more inequalities than went in.
+	
+        * planar.cpp: The indices for the resultants calculations were
+        wrong. The first set had as "to" quadrant east instead of total
+        resulting in no resultants whatsoever.
+
+2004-08-11 Axel Simon <A.Simon@kent.ac.uk> 
+	* planar.cpp: Added function that calculates one cut of the
+	integral convex hull.
+
+	* tests/testInequalityCalculateCut1.cpp: Added test case for the
+	new function.
+	
+	* all: spawned off branch rat-tvpi-branch to implement an integral
+	variant into the HEAD
+
+2004-08-05 Axel Simon <A.Simon@kent.ac.uk> 
+	* tvpi.cpp: Make the approximation work on bounds. Simple and not
+	very precise!
+	
+2004-08-02 Axel Simon <A.Simon@kent.ac.uk> 
+	* tvpi.cpp, polyhedron.cpp: Make resultant calculation work. Fixed
+	a bug in the index counting of calcResultantSets.
+
+	* interval.cpp: Corrected the inclusion check for intervals. An
+	infinite interval did not contain a finite one.
+
+	* tests/testInterval2.cpp: Added test case for the trivial
+	inclusion tests on intervals.
+	
+2004-07-28 Axel Simon <A.Simon@kent.ac.uk> 
+	* polyhedron.cpp: The reconstitution in the convex hull algorithm
+	iterated over the wrong indices when checking whether a point in
+	the box satisfies a potential inequality.
+
+	* tvpi.hh: Added a debug function showing how many inequalities
+	there are in each projection and if the polyhedra are shared.
+	
+2004-07-26 Axel Simon <A.Simon@kent.ac.uk> 
+	* polyhedron.cpp, polyhedron.hh: Added four functions that
+	propagate one bound to the neighbouring bounds. These four
+	functions in PolyhedronImpl are called through a common
+	propagateBounds function in Polyhedron. This function now has to
+	be called before inequalities that become redundant are removed
+	through enforceBounds.
+
+	* polyhedron.cpp, planar.hh, planar.cpp: Renamed cutsSquare to
+	outsideSquare which reflects the test better.
+
+	* tests/testPolyhedronPropagateBounds1.cpp: Added a new test for
+	propagation of bounds through inequalities.
+	
+2004-07-16 Axel Simon <A.Simon@kent.ac.uk> 
+	* polyhedron.cpp: Fixed the redundancy removal function even
+	more. Both bounds might need readjusting when the intersection
+	point of the inequalities moved them: In case one bound was
+	already tighter than the intersection point suggests, it setting
+	the other bound to the intersection point is too coarse. Instead
+	set it to the intersection point of the tighter inequality and the
+	adjacent inequality.
+
+2004-07-15 Axel Simon <A.Simon@kent.ac.uk> 
+	* polyhedron.cpp: Fixed the redundancy removal function. If two
+	inequalities are two quadrants apart but less that 2 Pi then,
+	after moving the upper bound as in the one-quadrant-apart case,
+	reduce the lower bound by intersecting the upper bound and an
+	inequality. I reduced the lower bound by the intersection point
+	which is incorrect if the lower bound was already tighter than the
+	intersection point.
+	
+2004-07-13 Axel Simon <A.Simon@kent.ac.uk> 
+	* planer.hh, polyhedron.cpp: Calculating the determinant of two
+	inequalities now returns 1 if this and the other inequality are
+	counterclockwise. This is more in tune with all other comparison
+	functions. The change only affected one test in the extreme
+	algorithm and another one in the entailment check inequality
+	vs. inequality+box.
+
+	* planar.cpp: Fixed entailment checks.
+	
+	* interval.hh, interval.cpp: Added equality operator.
+	
+2004-07-12 Axel Simon <A.Simon@kent.ac.uk>
+	* polyhedron.cpp: Converted the convex hull to the reduced
+	product.
+
+	* tests/testsPolyhedronHull1.cpp: Added test for the convex hull.
+	
+2004-07-08 Axel Simon <A.Simon@kent.ac.uk>
+	* polyhedron.cpp: Testing whether a line cuts the box in the
+	convex hull algorithm was wrongly negated. 2004-07-27: The code
+	was correct but the name was misleading.
+
+	* planar.cpp: The test 'isSaturated' on inequalities actually
+	tested feasibility. Changed the less or equal to an equality.
+	
+2004-07-07 Axel Simon <A.Simon@kent.ac.uk>
+	* polyhedron.cpp: An assertion on the prev index after the removal
+	of a redundant inequality was formulated as an assignment, not as
+	a test. This only caused trouble now since the array can now
+	become empty and prev can become 0.
+
+	* polyhedron.cpp: Setting the index to the precise number of
+	iterations so that a fixpoint is reached was not correct. It had
+	to be increased by one because index is decremented at the end of
+	the loop and thus the inequality in front of the one that was
+	removed and caused index to be reset would not be checked.
+
+	* tests/testPolyhedronAddInequalitySet1.cpp: Added test for the
+	bug above.
+
+2004-06-28 Axel Simon <A.Simon@kent.ac.uk>
+	* all: added branch svpi-tvpi-branch to implement a reduced
+	product between TVPI polyhedra and intervals.
+	
+	* planar.cpp: Introduces a CPP flag to indicate whether to do
+	tightening or not.
+
+	* tests/testDenseTvpiResultants1.cpp,
+	tests/testDenseTvpiResultants2.cpp: Added new tests derived from
+	the counter example for integral hull and closure interaction.
+
+2004-06-26 Axel Simon <A.Simon@kent.ac.uk>
+	* polyhedron.cpp: Rotating inequalities during normalization did
+	not set the hasChanged flag because it was passed by value, not by
+	reference. This prevented the copying of newly created
+	inequalities back to the facetNew array, leaving the caller with
+	pointers to free inequalities causing a funny assertion failure
+	later on when calculating resultants. Furthermore found a sequence
+	violation in readjusting the angles in normalize, similar to that
+	from the 23rd of January 2004.
+	
+2004-06-25 Axel Simon <A.Simon@kent.ac.uk>
+	* tvpi.cpp: Closure j,i <= j,k * k,i had the variables in the
+	result flipped due to a comparision that was in the wrong
+	direction. Added better debugging output.
+
+	* polyhedra.cpp: Calculating resultants was accessing the wrong
+	array when generating bounding SVPI inequalities.
+	
+2004-06-23 Axel Simon <A.Simon@kent.ac.uk>
+	* tvpi.cpp: Approximating a bounded system should not try to
+	access the index of the first unbounded variable, as that is
+	invalid. Removed this copy-and-paste bug from the loop that sums
+	up the bounds of the variables.
+	
+	* planar.cpp: The entailment check for two inequalities that
+	reduces to two test over one inequality should have been a
+	conjunction, not a disjunction. However, the function was not used
+	in this way.
+
+	* polyhedron.cpp: Merging inequalities in
+	PolyhedronImpl::insertInequalities used the entailment function in
+	case of parallel inequalities wrongly.
+
+2004-06-22 Axel Simon <A.Simon@kent.ac.uk>
+
+	* polyhedron.cpp: Fixed resultants calculation where the flags
+	stating which variables should be combined were misinterpreted.
+	
+2004-01-24 Axel Simon <A.Simon@kent.ac.uk>
+
+	* configure.ac, NEWS: Bumped the version number to 0.1.2.
+	
+	* Makefile.am: Add compiler flags to gives as many useful warnings
+	as possible.
+	
+	* tvpi.cpp, tvpi.hh: Add an augment function that extends the
+	value of one variable by another. Its semantics are like update
+	with additive set to true, however, it works on any variables and
+	does not remove the last dimension.
+	
+	* memory.cpp, memory.hh, planar.cpp, planar.hh, polyhedron.cpp,
+	polyhedron.hh: Factor out the debugging code that overrides the
+	new and delete operators. These are now defined by macros.
+	
+2004-01-23 Axel Simon <A.Simon@kent.ac.uk>
+	
+	* polyhedron.cpp: Corrected a bug in the convex hull algorithm:
+	Creating the four inequalities to describe two point involved
+	rotating the array to resurrect the order of the inequalities. A
+	statement newFacets[n]=newFacets[++n] was meant to copy the array
+	down which unfortunately is undefined in C since the side effect
+	can be executed by the compiler whenever it wants. The order of
+	evalutation changed when the compiler was optimizing, and it
+	reduced the statement to a no-op. I replace the whole loop by a
+	constant-time array pointer increment.
+	
+2004-01-15 Axel Simon <A.Simon@kent.ac.uk>
+
+	* tvpi_c.h, tvpi_c.cpp, Tvpi.hsc: Updated the C and the
+	Haskell interface with the approximation functions.
+
+	* common.hh, tvpi.hh: Moved the definition of LinComponent to the
+	common file for the sake of the C interface.
+	
+2003-12-15 Axel Simon <A.Simon@kent.ac.uk>
+
+	* configure.ac: Bumped version number to 0.1.1.
+	
+	* tests/testDenseTvpiApproximateInequalities1.cpp,
+	tests/testDenseTvpiApproximateInequalities2.cpp,
+	tests/testDenseTvpiApproximateInequalities3.cpp, tvpi.cpp: Added
+	tests for approximation function. Fixed some bugs in the same.
+	
+	* polyhedron.hh, polyhedron.cpp, tvpi.cpp: In case some of the
+	inequalities are redundant in the call to
+	DenseTvpi::addInequalitySet, calculating the directions for
+	Polyhedron::shrinkToIntegralGrid may work on deleted inequalities.
+	
+2003-11-10 Axel Simon <A.Simon@kent.ac.uk>
+
+	* Makefile.am, configure.ac: Install header files, distribute the
+	Haskell files. Make compilation in separate directory possible by
+	appending the $(srcdir) to the VPATH and the include paths.
+
+	* AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am, NEWS, README,
+	config.h.in, configure.ac, depcomp, install-sh, missing,
+	mkinstalldirs, config.sub, config.guess: Added standard GNU files.
+
+	* Makefile, Tvpi.hs, main.cpp: Removed since they are not part of
+	the library.
+
+	* memory.cpp, memory.hh, planar.cpp, planar.hh, polyhedron.cpp,
+	polyhedron.hh, tvpi.cpp, tvpi.hh, tvpi_c.cpp, tvpi_c.h,
+	tvpiexception.hh: Moved to src/.
+
+2003-11-07 Axel Simon <A.Simon@kent.ac.uk>
+
+	* src/memory.hh: Debugging memory management.
+
+	* src/tvpiexception.hh: Exceptions to be throws by this library.
+
+	* src/planar.hh, src/planar.cpp: Definitions for points, rays and
+	inequalities.
+
+	* src/polyhedron.hh, src/polyhedron.cpp: Definition of
+	reference-counted, planar polyhedra.
+
+	* src/tvpi.hh, src/tvpi.cpp: Definition of a closed TVPI system.

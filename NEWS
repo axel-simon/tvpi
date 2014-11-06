@@ -1,0 +1,14 @@
+-*- change-log -*-
+
+Version 0.1.2:
+
+	* added the augment domain operation
+
+Version 0.1.1:
+
+	* added a preliminary approximation function for inequalities with
+	more than two non-zero variables.
+
+Version 0.1.0:
+
+	* initial pre-release
